@@ -1,0 +1,29 @@
+<!-- templates/login.html -->
+{% extends "base.html" %}
+{% block title %}Login{% endblock %}
+{% block content %}
+<div class="auth-container">
+    <h2>Login</h2>
+    <form method="POST">
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
+        </div>
+        <div class="form-group">
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+        </div>
+        <div class="form-group">
+            <label for="role">Role:</label>
+            <select id="role" name="role" required>
+                <option value="dean">Dean</option>
+                <option value="teacher">Teacher</option>
+                <option value="student">Student</option>
+                <option value="parent">Parent</option>
+            </select>
+        </div>
+        <button type="submit">Login</button>
+    </form>
+    <p>Don't have an account? <a href="{{ url_for('auth.register') }}">Register here</a></p>
+</div>
+{% endblock %}

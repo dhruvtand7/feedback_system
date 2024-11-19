@@ -1,0 +1,60 @@
+<!-- templates/dashboard/teacher_dashboard.html -->
+{% extends "base.html" %}
+{% block title %}Teacher Dashboard{% endblock %}
+{% block content %}
+<div class="dashboard-container">
+    <h2>Welcome, {{ current_user.name }}</h2>
+    
+    {% if not current_user.university_id %}
+        <div class="no-university">
+            <p>Not part of any university yet.</p>
+            <form method="POST" action="{{ url_for('teacher.join_university') }}">
+                <div class="form-group">
+                    <label for="university_code">University Code:</label>
+                    <input type="text" id="university_code" name="university_code" required>
+                </div>
+                <button type="submit">Join University</button>
+            </form>
+        </div>
+    {% else %}
+        <div class="create-class">
+            <form method="POST" action="{{ url_for('teacher.create_class') }}">
+                <div class="form-group">
+                    <label for="class_name">Class Name:</label>
+                    <input type="text" id="class_name" name="class_name" required>
+                </div>
+                <button type="submit">Create New Class</button>
+            </form>
+        </div>
+        
+        {% if average_ratings %}
+            <div class="ratings-summary">
+                <h3>Overall Ratings</h3>
+                <p>Knowledge: {{ average_ratings.knowledge }}</p>
+                <p>Presentation: {{ average_ratings.presentation }}</p>
+                <p>Interaction: {{ average_ratings.interaction }}</p>
+                <p>Punctuality: {{ average_ratings.punctuality }}</p>
+            </div>
+        {% endif %}
+        
+        <div class="classes-list">
+            <h3>Your Classes</h3>
+            {% if classes %}
+                <div class="class-cards">
+                    {% for class in classes %}
+                        <div class="class-card">
+                            <h4>{{ class.class_name }}</h4>
+                            <p>Class Code: {{ class.class_code }}</p>
+                            <p>Students: {{ class.student_count }}</p>
+                            <a href="{{ url_for('teacher.view_class', class_id=class.class_id) }}" 
+                               class="btn-view">View Details</a>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p>No classes created yet.</p>
+            {% endif %}
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,55 @@
+<!-- templates/dashboard/student_dashboard.html -->
+{% extends "base.html" %}
+{% block title %}Student Dashboard{% endblock %}
+{% block content %}
+<div class="dashboard-container">
+    <h2>Welcome, {{ current_user.name }}</h2>
+    
+    <div class="parent-code">
+        <h3>Your Parent Code</h3>
+        <p>Share this code with your parent: <strong>{{ parent_code }}</strong></p>
+    </div>
+    
+    <div class="join-class">
+        <form method="POST" action="{{ url_for('student.join_class') }}">
+            <div class="form-group">
+                <label for="class_code">Class Code:</label>
+                <input type="text" id="class_code" name="class_code" required>
+            </div>
+            <button type="submit">Join Class</button>
+        </form>
+    </div>
+    
+    {% if average_ratings %}
+        <div class="ratings-summary">
+            <h3>Overall Ratings</h3>
+            <p>Participation: {{ average_ratings.participation }}</p>
+            <p>Teamwork: {{ average_ratings.teamwork }}</p>
+            <p>Timeliness: {{ average_ratings.timeliness }}</p>
+            <p>Behaviour: {{ average_ratings.behaviour }}</p>
+        </div>
+    {% endif %}
+    
+    <div class="classes-list">
+        <h3>Your Classes</h3>
+        {% if classes %}
+            <div class="class-cards">
+                {% for class in classes %}
+                    <div class="class-card">
+                        <h4>{{ class.class_name }}</h4>
+                        <p>Teacher: {{ class.teacher_name }}</p>
+                        {% if is_review_cycle_open() %}
+                            <a href="{{ url_for('student.provide_feedback', class_id=class.class_id) }}" 
+                               class="btn-feedback">Provide Feedback</a>
+                        {% endif %}
+                        <a href="{{ url_for('student.view_class', class_id=class.class_id) }}" 
+                           class="btn-view">View Details</a>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>Not enrolled in any classes yet.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

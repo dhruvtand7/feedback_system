@@ -1,0 +1,22 @@
+<!-- templates/components/review_cycle_form.html -->
+{% macro render_review_cycle_form() %}
+<div class="review-cycle-form">
+    <h3>Start New Review Cycle</h3>
+    <form id="reviewCycleForm" onsubmit="event.preventDefault(); startReviewCycle()">
+        <div class="form-group">
+            <label for="end_date">End Date:</label>
+            <input type="date" id="end_date" name="end_date" required>
+        </div>
+        <button type="submit">Start Review Cycle</button>
+    </form>
+    
+    {% if current_review %}
+    <div class="current-review-info">
+        <h4>Current Review Cycle</h4>
+        <p>Started: {{ current_review.start_date.strftime('%Y-%m-%d') }}</p>
+        <p>Ends: {{ current_review.end_date.strftime('%Y-%m-%d') }}</p>
+        <button onclick="closeReviewCycle()" class="btn-danger">Close Review Cycle</button>
+    </div>
+    {% endif %}
+</div>
+{% endmacro %}

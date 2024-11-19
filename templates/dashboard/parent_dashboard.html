@@ -1,0 +1,35 @@
+<!-- templates/dashboard/parent_dashboard.html -->
+{% extends "base.html" %}
+{% block title %}Parent Dashboard{% endblock %}
+{% block content %}
+<div class="dashboard-container">
+    <h2>Welcome, {{ current_user.name }}</h2>
+    
+    <div class="add-student">
+        <form method="POST" action="{{ url_for('parent.add_student') }}">
+            <div class="form-group">
+                <label for="parent_code">Student's Parent Code:</label>
+                <input type="text" id="parent_code" name="parent_code" required>
+            </div>
+            <button type="submit">Add Student</button>
+        </form>
+    </div>
+    
+    <div class="students-list">
+        <h3>Your Students</h3>
+        {% if students %}
+            <div class="student-cards">
+                {% for student in students %}
+                    <div class="student-card">
+                        <h4>{{ student.student_name }}</h4>
+                        <a href="{{ url_for('parent.view_student', student_id=student.student_id) }}" 
+                           class="btn-view">View Details</a>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>No students linked yet.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

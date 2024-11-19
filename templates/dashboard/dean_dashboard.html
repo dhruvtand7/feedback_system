@@ -1,0 +1,48 @@
+<!-- templates/dashboard/dean_dashboard.html -->
+{% extends "base.html" %}
+{% block title %}Dean Dashboard{% endblock %}
+{% block content %}
+<div class="dashboard-container">
+    <h2>Welcome, {{ current_user.name }}</h2>
+    
+    {% if not university %}
+        <div class="no-university">
+            <p>No university created yet.</p>
+            <form method="POST" action="{{ url_for('dean.create_university') }}">
+                <div class="form-group">
+                    <label for="university_name">University Name:</label>
+                    <input type="text" id="university_name" name="university_name" required>
+                </div>
+                <button type="submit">Create University</button>
+            </form>
+        </div>
+    {% else %}
+        <div class="university-info">
+            <h3>{{ university.university_name }}</h3>
+            <p>University Code: {{ university.university_code }}</p>
+            
+            <div class="review-controls">
+                <button onclick="startReviewCycle()">Start New Review Cycle</button>
+                <button onclick="closeReviewCycle()">Close Current Review Cycle</button>
+            </div>
+            
+            <div class="teachers-list">
+                <h3>Teachers</h3>
+                {% if teachers %}
+                    <ul>
+                        {% for teacher in teachers %}
+                            <li>
+                                <a href="{{ url_for('dean.view_teacher', teacher_id=teacher.teacher_id) }}">
+                                    {{ teacher.teacher_name }}
+                                </a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>No teachers in university yet.</p>
+                {% endif %}
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

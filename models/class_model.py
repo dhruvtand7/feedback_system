@@ -1,3 +1,4 @@
+# models/class_model.py
 class Class:
     def __init__(self, id, teacher_id, name, code):
         self.id = id

@@ -1,4 +1,3 @@
-<!-- templates/dashboard/dean_dashboard.html -->
 {% extends "base.html" %}
 {% block title %}Dean Dashboard{% endblock %}
 {% block content %}
@@ -32,9 +31,22 @@
                     <ul>
                         {% for teacher in teachers %}
                             <li>
-                                <a href="{{ url_for('dean.view_teacher', teacher_id=teacher.teacher_id) }}">
+                                <button onclick="toggleDetails('details-{{ teacher.teacher_id }}')">
                                     {{ teacher.teacher_name }}
-                                </a>
+                                </button>
+                                <div id="details-{{ teacher.teacher_id }}" class="teacher-details hidden">
+                                    <p><strong>Email:</strong> {{ teacher.email }}</p>
+                                    <h5>Classes:</h5>
+                                    <ul>
+                                        {% if teacher.classes %}
+                                            {% for class_name in teacher.classes.split(', ') %}
+                                                <li>{{ class_name }}</li>
+                                            {% endfor %}
+                                        {% else %}
+                                            <li>No classes assigned yet.</li>
+                                        {% endif %}
+                                    </ul>
+                                </div>
                             </li>
                         {% endfor %}
                     </ul>
@@ -45,4 +57,14 @@
         </div>
     {% endif %}
 </div>
+
+<style>
+    .hidden { display: none; }
+</style>
+
+<script>
+    function toggleDetails(elementId) {
+        document.getElementById(elementId).classList.toggle('hidden');
+    }
+</script>
 {% endblock %}

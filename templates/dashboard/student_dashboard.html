@@ -1,4 +1,3 @@
-<!-- templates/dashboard/student_dashboard.html -->
 {% extends "base.html" %}
 {% block title %}Student Dashboard{% endblock %}
 {% block content %}
@@ -38,12 +37,20 @@
                     <div class="class-card">
                         <h4>{{ class.class_name }}</h4>
                         <p>Teacher: {{ class.teacher_name }}</p>
-                        {% if is_review_cycle_open() %}
-                            <a href="{{ url_for('student.provide_feedback', class_id=class.class_id) }}" 
-                               class="btn-feedback">Provide Feedback</a>
-                        {% endif %}
-                        <a href="{{ url_for('student.view_class', class_id=class.class_id) }}" 
-                           class="btn-view">View Details</a>
+                        
+                        <!-- Add toggleable class details -->
+                        <button onclick="document.getElementById('details-{{ class.class_id }}').classList.toggle('hidden')">
+                            View Details
+                        </button>
+                        <div id="details-{{ class.class_id }}" class="class-details hidden">
+                            <p><strong>Class Code:</strong> {{ class.class_code }}</p>
+                            
+                            <!-- Example content; customize as needed -->
+
+                            {% if review_cycle_open %}
+                                <a href="{{ url_for('student.provide_feedback', class_id=class.class_id) }}" class="btn-feedback">Provide Feedback</a>
+                            {% endif %}
+                        </div>
                     </div>
                 {% endfor %}
             </div>
@@ -52,4 +59,15 @@
         {% endif %}
     </div>
 </div>
+
+<!-- Style for hiding and showing class details -->
+<style>
+    .hidden {
+        display: none;
+    }
+</style>
+
+<script>
+    // Optional script for any interactive behavior on the toggle button
+</script>
 {% endblock %}

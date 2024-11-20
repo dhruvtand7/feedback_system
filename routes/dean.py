@@ -1,7 +1,6 @@
-# routes/dean.py
 from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask_login import login_required, current_user
-from utils.helpers import role_required, calculate_average_ratings
+from utils.helpers import role_required
 from app import mysql
 
 dean_bp = Blueprint('dean', __name__)
@@ -16,16 +15,23 @@ def dashboard():
     cur.execute("SELECT * FROM university WHERE university_id = %s", (current_user.university_id,))
     university = cur.fetchone()
     
-    # Get teachers if university exists
+    # Get teachers and their classes if university exists
     teachers = []
     if university:
-        cur.execute("SELECT * FROM teacher WHERE university_id = %s", (university['university_id'],))
+        cur.execute("""
+            SELECT t.teacher_id, t.teacher_name, t.email, 
+                   GROUP_CONCAT(c.class_name SEPARATOR ', ') AS classes
+            FROM teacher t
+            LEFT JOIN class c ON t.teacher_id = c.teacher_id
+            WHERE t.university_id = %s
+            GROUP BY t.teacher_id
+        """, (university['university_id'],))
         teachers = cur.fetchall()
     
     cur.close()
     return render_template('dashboard/dean_dashboard.html', 
-                         university=university, 
-                         teachers=teachers)
+                           university=university, 
+                           teachers=teachers)
 
 @dean_bp.route('/create_university', methods=['POST'])
 @login_required

@@ -1,15 +1,29 @@
+# utils/helpers.py
+
 from functools import wraps
 from flask import redirect, url_for, flash
-from flask_login import current_user
+from flask_login import current_user, logout_user
+
+from flask import session
 
 def role_required(roles):
     def decorator(f):
         @wraps(f)
         def decorated_function(*args, **kwargs):
-            print(f"Current User Role: {current_user.role}, Allowed Roles: {roles}")  # Debugging
+            print(f"Session Role: {session.get('role')}, Current User Role: {current_user.role}, Allowed Roles: {roles}")
+            
             if not current_user.is_authenticated or current_user.role not in roles:
                 flash('You do not have permission to access this page.', 'error')
                 return redirect(url_for('auth.login'))
+            
+            # Extra check: Ensure session role matches current user role
+            if session.get('role') != current_user.role:
+                print("Role mismatch detected. Logging out.")
+                session.clear()
+                logout_user()  # Log out the user if roles mismatch
+                flash('Session expired or role mismatch. Please log in again.', 'error')
+                return redirect(url_for('auth.login'))
+
             return f(*args, **kwargs)
         return decorated_function
     return decorator

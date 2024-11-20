@@ -1,4 +1,3 @@
-<!-- templates/dashboard/parent_dashboard.html -->
 {% extends "base.html" %}
 {% block title %}Parent Dashboard{% endblock %}
 {% block content %}
@@ -22,8 +21,23 @@
                 {% for student in students %}
                     <div class="student-card">
                         <h4>{{ student.student_name }}</h4>
-                        <a href="{{ url_for('parent.view_student', student_id=student.student_id) }}" 
-                           class="btn-view">View Details</a>
+                        <!-- Ensure unique ID for the toggle button -->
+                        <button onclick="toggleDetails('details-{{ loop.index }}')">View Details</button>
+                        
+                        <!-- Ensure unique ID for the details container -->
+                        <div id="details-{{ loop.index }}" class="student-details hidden">
+                            <p><strong>Email:</strong> {{ student.email }}</p>
+                            <h5>Enrolled Classes:</h5>
+                            <ul>
+                                {% if student.enrollments %}
+                                    {% for enrollment in student.enrollments %}
+                                        <li>{{ enrollment.class_name }}</li>
+                                    {% endfor %}
+                                {% else %}
+                                    <li>No classes enrolled yet.</li>
+                                {% endif %}
+                            </ul>
+                        </div>
                     </div>
                 {% endfor %}
             </div>
@@ -32,4 +46,17 @@
         {% endif %}
     </div>
 </div>
+
+<style>
+    .hidden { display: none; }
+</style>
+
+<script>
+    function toggleDetails(elementId) {
+        const element = document.getElementById(elementId);
+        if (element) {
+            element.classList.toggle('hidden');
+        }
+    }
+</script>
 {% endblock %}

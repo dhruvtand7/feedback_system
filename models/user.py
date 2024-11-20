@@ -13,20 +13,21 @@ class User(UserMixin):
         return str(self.id)
     
     @staticmethod
-    def get_user_by_id(mysql, user_id, role):
+    def get_user_by_id(mysql, user_id):
         cur = mysql.connection.cursor()
         try:
-            cur.execute(f"SELECT * FROM {role} WHERE {role}_id = %s", (user_id,))
-            user_data = cur.fetchone()
-            if user_data:
-                return User(
-                    id=user_data[f'{role}_id'],
-                    email=user_data['email'],
-                    name=user_data[f'{role}_name'],
-                    role=role,
-                    university_id=user_data.get('university_id'),
-                    parent_code=user_data.get('parent_code')
-                )
+            for role in ['dean', 'teacher', 'student', 'parent']:
+                cur.execute(f"SELECT * FROM {role} WHERE {role}_id = %s", (user_id,))
+                user_data = cur.fetchone()
+                if user_data:
+                    return User(
+                        id=user_data[f'{role}_id'],
+                        email=user_data['email'],
+                        name=user_data[f'{role}_name'],
+                        role=role,
+                        university_id=user_data.get('university_id'),
+                        parent_code=user_data.get('parent_code')
+                    )
         finally:
             cur.close()
         return None

@@ -1,3 +1,5 @@
+/*static/js/scripts.js */
+
 function startReviewCycle() {
     const endDate = prompt("Enter end date for review cycle (YYYY-MM-DD):");
     if (!endDate) return;

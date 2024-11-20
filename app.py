@@ -1,5 +1,5 @@
 # app.py
-from flask import Flask, redirect, url_for
+from flask import Flask, redirect, url_for, session
 from flask_mysqldb import MySQL
 from flask_login import LoginManager
 from config import Config
@@ -38,22 +38,34 @@ def index():
 def load_user(user_id):
     from models.user import User
     cur = mysql.connection.cursor()
-    
-    # Try to find user in each role table
-    for role in ['dean', 'teacher', 'student', 'parent']:
-        cur.execute(f"SELECT * FROM {role} WHERE {role}_id = %s", (user_id,))
-        user_data = cur.fetchone()
-        if user_data:
-            cur.close()
-            return User(
-                id=user_data[f'{role}_id'],
-                email=user_data['email'],
-                name=user_data[f'{role}_name'],
-                role=role,
-                university_id=user_data.get('university_id')
-            )
-    
+
+    # Retrieve the role from the session
+    role = session.get('role')
+    if not role:
+        print("No role found in session; redirecting to login.")
+        cur.close()
+        return None  # No role in session, so re-login is required
+
+    print(f"Loading user with user_id={user_id} and role={role}")
+
+    # Check only the table corresponding to the session role
+    cur.execute(f"SELECT * FROM {role} WHERE {role}_id = %s", (user_id,))
+    user_data = cur.fetchone()
     cur.close()
+
+    if user_data:
+        user = User(
+            id=user_data[f'{role}_id'],
+            email=user_data['email'],
+            name=user_data[f'{role}_name'],
+            role=role,
+            university_id=user_data.get('university_id')
+        )
+        session['role'] = user.role  # Ensure session role consistency
+        return user
+
+    print(f"No user found for user_id={user_id} in role={role}")
+    session.clear()  # Clear session if no user is found in the expected table
     return None
 
 if __name__ == '__main__':
